@@ -1,901 +1,584 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>CelestialPixel</title>
-  <style>
-    /* Reset and base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #eee;
-      overflow-x: hidden;
-      transition: background-color 0.5s, color 0.5s;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      scroll-padding-top: 70px;
-    }
-    a {
-      color: inherit;
-      text-decoration: none;
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-    a:hover,
-    a:focus {
-      color: #00bcd4;
-      outline: none;
-    }
-    :focus-visible {
-      outline: 2px solid #00bcd4;
-      outline-offset: 2px;
-    }
-    h1, h2, h3 {
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #00bcd4aa;
-      border-radius: 20px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    /* Navbar */
-    nav.navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 65px;
-      background: rgba(18, 18, 18, 0.85);
-      backdrop-filter: saturate(180%) blur(12px);
-      display: flex;
-      align-items: center;
-      padding: 0 30px;
-      z-index: 9999;
-      user-select: none;
-      border-bottom: 1px solid #222;
-      transition: background-color 0.3s ease;
-    }
-    nav .logo {
-      font-size: 1.5rem;
-      font-weight: 800;
-      font-family: 'Orbitron', sans-serif;
-      color: #bb00ff;
-      flex-shrink: 0;
-      letter-spacing: 2px;
-      user-select:none;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      flex-grow: 1;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 25px;
-      font-weight: 600;
-      font-size: 1rem;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    nav ul li a {
-      padding: 8px 10px;
-      border-radius: 6px;
-      color: #bbb;
-      position: relative;
-      transition: color 0.3s ease;
-    }
-    nav ul li a:hover,
-    nav ul li a:focus-visible {
-      color: #00bcd4;
-      background: rgba(0, 188, 212, 0.15);
-      outline-offset: 2px;
-      outline: none;
-    }
-    nav ul li a.active {
-      color: #bb00ff;
-      font-weight: 800;
-    }
-    button.mode-toggle {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #222;
-      border: none;
-      padding: 7px 16px;
-      border-radius: 30px;
-      color: #00bcd4;
-      font-weight: 600;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      margin-left: 20px;
-      flex-shrink: 0;
-    }
-    button.mode-toggle:hover,
-    button.mode-toggle:focus-visible {
-      background-color: #00bcd4;
-      color: #121212;
-      outline: none;
-    }
-
-    /* Hero Section */
-    section.hero {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
-      padding: 0 30px;
-      z-index: 1;
-    }
-    section.hero .hero-content {
-      position: relative;
-      z-index: 10;
-      max-width: 720px;
-      background: rgba(18, 18, 18, 0.75);
-      border-radius: 16px;
-      padding: 40px 50px;
-      box-shadow: 0 0 25px rgba(187, 0, 255, 0.5);
-      user-select:none;
-      backdrop-filter: saturate(180%) blur(12px);
-      animation: fadeInUp 1.2s ease forwards;
-    }
-    section.hero h1 {
-      font-size: 2.4rem;
-      color: #bb00ff;
-      margin-bottom: 24px;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      user-select:none;
-    }
-    .cta-button {
-      display: inline-block;
-      background: #bb00ff;
-      color: #eee;
-      font-weight: 700;
-      padding: 18px 48px;
-      border-radius: 48px;
-      font-size: 1.1rem;
-      letter-spacing: 0.07em;
-      cursor: pointer;
-      border: 2px solid #bb00ff;
-      box-shadow: 0 0 25px #bb00ffaa;
-      transition: all 0.3s ease;
-      user-select:none;
-      text-transform: uppercase;
-      user-select:none;
-      text-shadow: 0 0 12px #ff00ffbb;
-    }
-    .cta-button:hover,
-    .cta-button:focus-visible {
-      background: transparent;
-      color: #bb00ff;
-      box-shadow: 0 0 48px #bb00ff;
-      outline: none;
-    }
-    /* 3D background container */
-    #threejs-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* About Section */
-    section#about {
-      background: #1e1e1e;
-      padding: 80px 20px 100px;
-      max-width: 1000px;
-      margin: 0 auto;
-      user-select:none;
-    }
-    section#about h2 {
-      font-size: 2.6rem;
-      text-align: center;
-      margin-bottom: 48px;
-      color: #bb00ff;
-      font-family: 'Orbitron', sans-serif;
-    }
-    .timeline {
-      position: relative;
-      margin: 0 auto;
-      max-width: 720px;
-    }
-    /* Vertical line in timeline */
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 20px;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #bb00ff;
-      border-radius: 10px;
-      opacity: 0.3;
-    }
-    .event {
-      position: relative;
-      margin-left: 60px;
-      padding: 16px 0;
-      border-left: 2px solid transparent;
-      cursor: default;
-      transition: border-color 0.3s;
-    }
-    .event:not(:last-child) {
-      border-bottom: 1px solid #444;
-    }
-    .event .date {
-      font-weight: 700;
-      color: #00bcd4;
-      font-size: 1.1rem;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin-bottom: 6px;
-      user-select:none;
-    }
-    .event .description {
-      color: #ccc;
-      font-size: 1rem;
-      user-select:none;
-      line-height: 1.5;
-    }
-    .event:hover,
-    .event:focus-within {
-      border-left-color: #bb00ff;
-      background: rgba(187, 0, 255, 0.05);
-      outline: none;
-    }
-    /* Galaxy canvas container */
-    #galaxyCanvas {
-      display: block;
-      margin: 48px auto 0;
-      width: 100%;
-      max-width: 720px;
-      height: 300px;
-      border-radius: 12px;
-      user-select:none;
-    }
-
-    /* Services Section */
-    section#services {
-      padding: 80px 20px 100px;
-      max-width: 1000px;
-      margin: 0 auto;
-      user-select:none;
-    }
-    section#services h2 {
-      font-size: 2.6rem;
-      text-align: center;
-      margin-bottom: 48px;
-      color: #bb00ff;
-      font-family: 'Orbitron', sans-serif;
-    }
-    .service-cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 32px;
-      user-select: none;
-    }
-    .service-card {
-      width: 280px;
-      perspective: 1000px;
-    }
-    .service-card-inner {
-      position: relative;
-      width: 100%;
-      height: 350px;
-      border-radius: 16px;
-      transition: transform 0.6s;
-      transform-style: preserve-3d;
-      box-shadow: 0 0 30px rgba(187, 0, 255, 0.4);
-    }
-    .service-card:hover .service-card-inner {
-      transform: rotateY(180deg);
-    }
-    .service-card-front, .service-card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      color: #ddd;
-    }
-    .service-card-front {
-      background: #1a1a1a;
-    }
-    .service-card-back {
-      background: #bb00ff;
-      color: #111;
-      transform: rotateY(180deg);
-    }
-
-    /* Testimonials carousel */
-    .testimonials {
-      max-width: 720px;
-      margin: 48px auto 0;
-      user-select:none;
-      position: relative;
-      overflow: hidden;
-      border-radius: 20px;
-      box-shadow: 0 0 30px #bb00ffaa;
-      background: #2a003b;
-      padding: 24px 0 12px;
-    }
-    .testimonial-container {
-      display: flex;
-      transition: transform 0.5s ease;
-      will-change: transform;
-      user-select:none;
-    }
-    .testimonial {
-      flex: 0 0 100%;
-      padding: 0 40px;
-      box-sizing: border-box;
-      color: #ddd;
-      font-style: italic;
-      font-size: 1.1rem;
-      line-height: 1.6;
-      user-select:none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      min-height: 130px;
-    }
-    .testimonial span.author {
-      margin-top: 16px;
-      font-weight: 700;
-      font-style: normal;
-      color: #bb00ff;
-      font-family: 'Orbitron', sans-serif;
-      user-select:none;
-    }
-    .testimonial-controls {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-      user-select:none;
-    }
-    .testimonial-controls button {
-      border: none;
-      background: #bb00ff66;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .testimonial-controls button.active,
-    .testimonial-controls button:hover,
-    .testimonial-controls button:focus-visible {
-      background: #bb00ff;
-      outline: none;
-    }
-
-    /* Founders Section */
-    section#founders {
-      padding: 80px 20px 100px;
-      max-width: 1000px;
-      margin: 0 auto;
-      user-select:none;
-    }
-    section#founders h2 {
-      font-size: 2.6rem;
-      text-align: center;
-      margin-bottom: 48px;
-      color: #bb00ff;
-      font-family: 'Orbitron', sans-serif;
-    }
-    .founder-profiles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 32px;
-      justify-content: center;
-      user-select:none;
-    }
-    .founder-card {
-      background: #1a001f;
-      width: 300px;
-      height: 420px;
-      border-radius: 20px;
-      perspective: 1200px;
-      cursor: pointer;
-      user-select:none;
-    }
-    .founder-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 20px;
-      transition: transform 0.7s ease;
-      transform-style: preserve-3d;
-      box-shadow: 0 0 35px #bb00ffaa;
-      background: linear-gradient(135deg, #220022 0%, #550055 100%);
-      user-select:none;
-    }
-    .founder-card:hover .founder-inner,
-    .founder-card:focus-within .founder-inner {
-      transform: rotateY(180deg);
-    }
-    .founder-front, .founder-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 20px;
-      backface-visibility: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px 24px;
-      box-sizing: border-box;
-      user-select:none;
-    }
-    .founder-front {
-      justify-content: flex-start;
-      gap: 12px;
-      color: #bb00ff;
-    }
-    .founder-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #bb00ff, #330033);
-      box-shadow: 0 0 15px #bb00ffcc;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-      user-select:none;
-      border: 3px solid #bb00ff;
-    }
-    /* Particle-style silhouette for founders */
-    .founder-avatar canvas {
-      pointer-events: none;
-      display: block;
-    }
-    .founder-name {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 800;
-      font-size: 1.6rem;
-      letter-spacing: 0.05em;
-      user-select:none;
-    }
-    .founder-role {
-      font-weight: 600;
-      font-size: 1rem;
-      color: #00bcd4;
-      user-select:none;
-    }
-    .founder-back {
-      background: #330044;
-      color: #ddd;
-      font-weight: 500;
-      justify-content: flex-start;
-      user-select:none;
-      overflow-y: auto;
-      text-align: center;
-    }
-    .founder-back h3 {
-      font-weight: 700;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
-      margin-bottom: 14px;
-      user-select:none;
-      color: #bb00ff;
-    }
-    .founder-bio {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 18px;
-      user-select:none;
-      color: #ddd;
-    }
-    .founder-skills {
-      margin-bottom: 20px;
-    }
-    .skill {
-      display: inline-block;
-      background: #440066;
-      color: #bb00ff;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 16px;
-      margin: 5px 6px;
-      font-size: 0.9rem;
-      user-select:none;
-    }
-    .founder-quote {
-      font-style: italic;
-      color: #ff80ff;
-      font-weight: 600;
-      font-size: 1rem;
-      letter-spacing: 0.06em;
-      margin-top: auto;
-      user-select:none;
-    }
-
-    /* Contact Section */
-    section#contact {
-      background: #1a001f;
-      padding: 80px 20px 120px;
-      max-width: 1000px;
-      margin: 0 auto 50px;
-      user-select:none;
-    }
-    section#contact h2 {
-      font-size: 2.6rem;
-      text-align: center;
-      margin-bottom: 48px;
-      color: #bb00ff;
-      font-family: 'Orbitron', sans-serif;
-    }
-    .contact-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 48px;
-      justify-content: center;
-      user-select:none;
-    }
-
-    /* Contact Form */
-    form.contact-form {
-      background: #220033;
-      padding: 32px 32px 42px;
-      flex: 1 1 400px;
-      border-radius: 20px;
-      box-shadow: 0 0 30px #bb00ffcc;
-      user-select:none;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      font-size: 1rem;
-      color: #ddd;
-    }
-    form.contact-form label {
-      position: relative;
-      display: block;
-      user-select:none;
-    }
-    form.contact-form input,
-    form.contact-form textarea {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid #444;
-      padding: 12px 0 8px 0;
-      width: 100%;
-      color: #eee;
-      font-size: 1rem;
-      user-select:none;
-      transition: border-color 0.3s ease;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    form.contact-form input:focus,
-    form.contact-form textarea:focus {
-      outline: none;
-      border-bottom-color: #bb00ff;
-    }
-    form.contact-form input:focus + span.label-text,
-    form.contact-form textarea:focus + span.label-text,
-    form.contact-form input:not(:placeholder-shown) + span.label-text,
-    form.contact-form textarea:not(:placeholder-shown) + span.label-text {
-      transform: translateY(-28px);
-      font-size: 0.8rem;
-      color: #bb00ff;
-      user-select:none;
-    }
-    span.label-text {
-      position: absolute;
-      left: 0;
-      top: 12px;
-      pointer-events: none;
-      color: #777;
-      transition: transform 0.3s ease, font-size 0.3s ease, color 0.3s ease;
-      user-select:none;
-    }
-    form.contact-form textarea {
-      resize: vertical;
-      min-height: 110px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    form.contact-form button[type="submit"] {
-      background: #bb00ff;
-      color: #fff;
-      border: none;
-      padding: 16px 40px;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      box-shadow: 0 0 20px rgba(187, 0, 255, 0.4);
-      display: block;
-      width: auto;
-      margin: 30px auto 0;
-    }
-    form.contact-form button[type="submit"]:hover,
-    form.contact-form button[type="submit"]:focus {
-      background: #d400ff;
-      transform: translateY(-2px);
-      box-shadow: 0 0 30px rgba(187, 0, 255, 0.6);
-    }
-    form.contact-form button[type="submit"]:active {
-      transform: translateY(1px);
-    }
-
-    /* Social media links */
-    .social-links {
-      margin-top: 24px;
-      display: flex;
-      gap: 28px;
-      justify-content: center;
-      user-select:none;
-    }
-    .social-links a {
-      color: #bbb;
-      font-size: 28px;
-      transition: color 0.3s ease, transform 0.3s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select:none;
-    }
-    .social-links a:hover,
-    .social-links a:focus-visible {
-      color: #bb00ff;
-      transform: scale(1.2);
-      outline: none;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .contact-wrapper {
-        flex-direction: column;
-        align-items: center;
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FFD700',
+            secondary: '#FF1493',
+            accent: '#00BFFF',
+            dark: '#0A0A0A',
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+          },
+        }
       }
     }
-    @media (max-width: 400px) {
-      nav ul {
-        gap: 15px;
-        font-size: 0.9rem;
-      }
-      nav .logo {
-        font-size: 1.2rem;
-      }
-      section#contact h2 {
-        font-size: 1.8rem;
-      }
-      form.contact-form {
-        padding: 20px;
-      }
-    }
-    /* Animations */
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+  </script>
 </head>
-<body>
-  <nav class="navbar" role="navigation" aria-label="Primary Navigation">
-    <div class="logo" aria-label="CelestialPixel Logo">
-      CelestialPixel
+<body class="font-poppins bg-dark text-white overflow-x-hidden">
+  <!-- Mobile Menu Button -->
+  <button id="mobile-menu-button" class="fixed top-5 right-5 z-[100] p-2.5 rounded-xl bg-gradient-to-r from-primary/90 to-secondary/90 backdrop-blur-lg md:hidden group hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_20px_rgba(255,215,0,0.3)]">
+    <div class="relative w-7 h-7 flex flex-col items-center justify-center gap-1.5">
+      <span class="w-6 h-0.5 bg-dark rounded-full transform transition-all duration-300 group-hover:rotate-45 group-hover:translate-y-2"></span>
+      <span class="w-6 h-0.5 bg-dark rounded-full transform transition-all duration-300 group-hover:opacity-0"></span>
+      <span class="w-6 h-0.5 bg-dark rounded-full transform transition-all duration-300 group-hover:-rotate-45 group-hover:-translate-y-2"></span>
     </div>
-    <ul role="menubar" aria-live="polite" aria-relevant="additions removals">
-      <li role="none"><a href="#home" role="menuitem" tabindex="0" class="active">Home</a></li>
-      <li role="none"><a href="#about" role="menuitem" tabindex="-1">About</a></li>
-      <li role="none"><a href="#services" role="menuitem" tabindex="-1">Services</a></li>
-      <li role="none"><a href="#founders" role="menuitem" tabindex="-1">Founders</a></li>
-      <li role="none"><a href="#contact" role="menuitem" tabindex="-1">Contact</a></li>
-    </ul>
-    <button class="mode-toggle" aria-pressed="false" aria-label="Toggle dark and light mode">Light Mode</button>
+  </button>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="fixed inset-0 bg-gradient-to-b from-dark/98 to-black/98 backdrop-blur-xl z-[90] flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+    <!-- Menu Header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-white/10">
+      <div class="text-2xl font-orbitron font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+        CelestialPixel
+      </div>
+      <button class="p-2 text-white hover:text-primary transition-colors duration-300">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Menu Links -->
+    <nav class="flex-1 overflow-y-auto py-8 px-6">
+      <ul class="space-y-6">
+        <li>
+          <a href="#home" class="flex items-center gap-4 text-xl text-white/90 hover:text-primary transition-colors duration-300 font-orbitron group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🏠</span>
+            <span class="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary group-hover:after:w-full after:transition-all after:duration-300">Home</span>
+          </a>
+        </li>
+        <li>
+          <a href="#why-us" class="flex items-center gap-4 text-xl text-white/90 hover:text-primary transition-colors duration-300 font-orbitron group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">⭐</span>
+            <span class="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary group-hover:after:w-full after:transition-all after:duration-300">Why Us</span>
+          </a>
+        </li>
+        <li>
+          <a href="#services" class="flex items-center gap-4 text-xl text-white/90 hover:text-primary transition-colors duration-300 font-orbitron group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">🚀</span>
+            <span class="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary group-hover:after:w-full after:transition-all after:duration-300">Services</span>
+          </a>
+        </li>
+        <li>
+          <a href="#testimonials" class="flex items-center gap-4 text-xl text-white/90 hover:text-primary transition-colors duration-300 font-orbitron group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">💬</span>
+            <span class="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary group-hover:after:w-full after:transition-all after:duration-300">Testimonials</span>
+          </a>
+        </li>
+        <li>
+          <a href="#contact" class="flex items-center gap-4 text-xl text-white/90 hover:text-primary transition-colors duration-300 font-orbitron group">
+            <span class="text-2xl group-hover:scale-110 transition-transform duration-300">📞</span>
+            <span class="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:to-secondary group-hover:after:w-full after:transition-all after:duration-300">Contact</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Menu Footer -->
+    <div class="px-6 py-8 border-t border-white/10">
+      <div class="flex justify-center space-x-6">
+        <a href="#" class="text-white/60 hover:text-primary transition-colors duration-300">
+          <i class="fab fa-facebook-f text-xl"></i>
+        </a>
+        <a href="#" class="text-white/60 hover:text-primary transition-colors duration-300">
+          <i class="fab fa-twitter text-xl"></i>
+        </a>
+        <a href="#" class="text-white/60 hover:text-primary transition-colors duration-300">
+          <i class="fab fa-instagram text-xl"></i>
+        </a>
+        <a href="#" class="text-white/60 hover:text-primary transition-colors duration-300">
+          <i class="fab fa-linkedin-in text-xl"></i>
+        </a>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="#contact" class="inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-dark bg-primary rounded-full hover:bg-primary/90 transition-colors duration-300">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="fixed top-0 left-0 w-full px-4 sm:px-8 py-5 bg-dark/95 backdrop-blur-lg z-50 border-b border-white/10 h-[65px] animate-slideDown">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="text-3xl font-orbitron font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">CelestialPixel</div>
+      <ul class="hidden md:flex gap-8 items-center">
+        <li><a href="#home" class="text-white/90 hover:text-primary transition-colors duration-300 text-lg font-medium relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:via-secondary after:to-accent hover:after:w-full after:transition-all after:duration-300">Home</a></li>
+        <li><a href="#why-us" class="text-white/90 hover:text-primary transition-colors duration-300 text-lg font-medium relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:via-secondary after:to-accent hover:after:w-full after:transition-all after:duration-300">Why Us</a></li>
+        <li><a href="#services" class="text-white/90 hover:text-primary transition-colors duration-300 text-lg font-medium relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:via-secondary after:to-accent hover:after:w-full after:transition-all after:duration-300">Services</a></li>
+        <li><a href="#testimonials" class="text-white/90 hover:text-primary transition-colors duration-300 text-lg font-medium relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:via-secondary after:to-accent hover:after:w-full after:transition-all after:duration-300">Testimonials</a></li>
+        <li><a href="#contact" class="text-white/90 hover:text-primary transition-colors duration-300 text-lg font-medium relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-primary after:via-secondary after:to-accent hover:after:w-full after:transition-all after:duration-300">Contact</a></li>
+      </ul>
+    </div>
   </nav>
 
-  <main>
-    <!-- Hero Section -->
-    <section class="hero" id="home" tabindex="-1" aria-label="Hero section with 3D constellation background and tagline">
-      <div class="hero-content">
-        <h1>Crafting Stellar Digital Experiences</h1>
-        <a href="#contact" class="cta-button" role="button" tabindex="0">Let's Grow Together</a>
+  <section class="min-h-screen bg-dark flex items-center justify-center relative pt-[65px] pb-12 overflow-hidden scroll-mt-16" id="home">
+    <div class="absolute inset-0 bg-gradient-to-br from-black/90 to-black/70 bg-[url('https://images.unsplash.com/photo-1636953056323-9c09fdd74fa6?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center brightness-75 z-10"></div>
+    
+    <div class="w-full max-w-7xl grid lg:grid-cols-[1.2fr,0.8fr] gap-8 lg:gap-16 px-4 sm:px-8 relative z-20">
+      <div class="text-left py-8 lg:py-16">
+        <h1 class="text-4xl sm:text-5xl lg:text-[clamp(2.5rem,5vw,4.5rem)] leading-tight mb-6 sm:mb-8 font-orbitron">
+          <span class="block mb-2 sm:mb-4">Transform Your</span>
+          <span class="block mb-2 sm:mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-extrabold">Digital Presence</span>
+          <span class="block">With Innovation</span>
+        </h1>
+        <p class="text-lg sm:text-xl lg:text-[clamp(1rem,2vw,1.3rem)] text-white/90 mb-8 sm:mb-12 leading-relaxed max-w-2xl">
+          Elevate your brand with cutting-edge digital solutions. We combine creativity, technology, and strategy to deliver exceptional results that drive growth and engagement.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-stretch sm:items-center">
+          <a href="#contact" class="inline-flex items-center justify-center px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg font-semibold uppercase tracking-wider text-dark bg-primary rounded-full hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">Get Started</a>
+          <a href="#services" class="inline-flex items-center justify-center px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg font-semibold uppercase tracking-wider text-white border-2 border-accent rounded-full hover:bg-accent hover:-translate-y-1 transition-all duration-300">Our Services</a>
+        </div>
       </div>
-      <div id="threejs-container" aria-hidden="true"></div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" tabindex="-1" aria-labelledby="about-title" aria-describedby="about-description">
-      <h2 id="about-title">About Us</h2>
-      <div class="timeline" role="list" aria-label="Company journey timeline">
-        <article class="event" role="listitem" tabindex="0">
-          <time class="date" datetime="2015">2015</time>
-          <p class="description">Founded with a vision to craft stellar digital solutions that shine bright in the vast internet galaxy.</p>
-        </article>
-        <article class="event" role="listitem" tabindex="0">
-          <time class="date" datetime="2018">2018</time>
-          <p class="description">Expanded our constellation with top talent and cutting-edge technology, enhancing our service scope.</p>
-        </article>
-        <article class="event" role="listitem" tabindex="0">
-          <time class="date" datetime="2021">2021</time>
-          <p class="description">Launched innovative marketing products that transformed client engagement across digital platforms.</p>
-        </article>
+      
+      <div class="relative hidden lg:flex items-center justify-center">
+        <div class="relative w-full h-full min-h-[400px] bg-gradient-to-r from-primary to-secondary rounded-[30px] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
+          <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" alt="Digital Innovation" class="absolute inset-0 w-full h-full object-cover opacity-90">
+        </div>
+        <div class="absolute top-[10%] -right-8 bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border border-white/20 shadow-xl transform hover:-translate-y-2 transition-transform duration-300">
+          <img src="https://images.unsplash.com/photo-1596526131083-e8c633c948d2?auto=format&fit=crop&w=200&q=80" alt="Digital Success" class="w-[120px] sm:w-[150px] h-[80px] sm:h-[100px] object-cover rounded-xl">
+        </div>
+        <div class="absolute bottom-[10%] -left-8 bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-2xl border border-white/20 shadow-xl transform hover:translate-y-2 transition-transform duration-300">
+          <img src="https://images.unsplash.com/photo-1563986768711-b3bde3dc821e?auto=format&fit=crop&w=200&q=80" alt="Innovation" class="w-[120px] sm:w-[150px] h-[80px] sm:h-[100px] object-cover rounded-xl">
+        </div>
       </div>
-      <canvas id="galaxyCanvas" width="720" height="300" aria-hidden="true" role="img" aria-label="3D animated galaxy visualization"></canvas>
+    </div>
+  </section>
 
-      <div class="mv-container">
-        <section class="mv-card" tabindex="0" role="region" aria-label="Mission statement">
-          <div class="mv-icon" aria-hidden="true">🚀</div>
-          <h3>Mission</h3>
-          <p>To propel brands into the digital stratosphere with innovative marketing strategies and immersive experiences.</p>
-        </section>
-        <section class="mv-card" tabindex="0" role="region" aria-label="Vision statement">
-          <div class="mv-icon" aria-hidden="true">🌌</div>
-          <h3>Vision</h3>
-          <p>To be the guiding star for digital innovation, illuminating pathways for brands to connect deeply with their audience.</p>
-        </section>
-      </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" tabindex="-1" aria-labelledby="services-title" aria-describedby="services-description">
-      <h2 id="services-title">Our Services</h2>
-      <div class="service-cards">
+  <!-- Why Us Section - Highlighting our unique value propositions -->
+  <section class="py-24 bg-gradient-to-br from-dark to-[#150515] scroll-mt-16" id="why-us">
+    <div class="container mx-auto px-6">
+      <!-- Section Title -->
+      <h2 class="text-4xl md:text-5xl font-orbitron text-center mb-16 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent uppercase tracking-wider">Why Choose Us</h2>
+      
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <!-- Feature Card - Fast Delivery -->
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform hover:-translate-y-2 transition-all duration-300">
+          <div class="text-4xl mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">⚡</div>
+          <h3 class="text-xl font-orbitron text-primary mb-4">Fast Delivery</h3>
+          <p class="text-white/80">Quick turnaround times without compromising on quality</p>
+        </div>
         
-        <div class="service-card" tabindex="0" aria-label="Reels service card">
-          <div class="service-card-inner">
-            <div class="service-card-front">
-              <h3>Reels</h3>
-              <div class="service-price">Price: ₹7,500/-</div>
-              <p class="service-description">Boost your brand's visibility with professionally edited and trend-savvy reels that grab attention.</p>
-              <div class="monthly-plan">Monthly Plan: ₹500 per reel</div>
-              <div class="total-cost">Total for 15 reels/month: ₹7,500</div>
-            </div>
-            <div class="service-card-back">
-              <h3>Reels Details</h3>
-              <p>Includes editing, trend analysis, and delivery of high-quality reels.</p>
-            </div>
-          </div>
+        <!-- Feature Card - Custom Solutions -->
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform hover:-translate-y-2 transition-all duration-300">
+          <div class="text-4xl mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">🎯</div>
+          <h3 class="text-xl font-orbitron text-primary mb-4">Custom Solutions</h3>
+          <p class="text-white/80">Tailored strategies to meet your unique business needs</p>
         </div>
-
-        <div class="service-card" tabindex="0" aria-label="Posts service card">
-          <div class="service-card-inner">
-            <div class="service-card-front">
-              <h3>Posts</h3>
-              <div class="service-price">Price: ₹4,500/-</div>
-              <p class="service-description">Elevate your brand's profile with professionally edited posts that captivate your audience.</p>
-              <div class="cost-per-post">Cost per Post: ₹300</div>
-              <div class="total-cost">Total for 15 posts/month: ₹4,500</div>
-            </div>
-            <div class="service-card-back">
-              <h3>Posts Details</h3>
-              <p>Includes creative design, editing, and optimization for engagement.</p>
-            </div>
-          </div>
+        
+        <!-- Feature Card - Creative Excellence -->
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform hover:-translate-y-2 transition-all duration-300">
+          <div class="text-4xl mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">💡</div>
+          <h3 class="text-xl font-orbitron text-primary mb-4">Creative Excellence</h3>
+          <p class="text-white/80">Innovative ideas that set you apart from competitors</p>
         </div>
-
-        <div class="service-card" tabindex="0" aria-label="Website service card">
-          <div class="service-card-inner">
-            <div class="service-card-front">
-              <h3>Website</h3>
-              <div class="service-price">Price: ₹13,000/-</div>
-              <p class="service-description">Get a modern, responsive, and SEO-ready website designed to reflect your vision.</p>
-              <div class="one-time-fee">One-time Fee: ₹13,000</div>
-              <div class="ideal-for">Ideal for: Startups, personal brands, and businesses.</div>
-            </div>
-            <div class="service-card-back">
-              <h3>Website Details</h3>
-              <p>Includes design, development, and SEO optimization.</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Founders Section -->
-    <section id="founders" tabindex="-1" aria-labelledby="founders-title" aria-describedby="founders-description">
-      <h2 id="founders-title">Meet the Founders</h2>
-      <div class="founder-profiles">
-        <div class="founder-card" tabindex="0" aria-describedby="sid-desc" aria-label="Founder Sid profile card">
-          <div class="founder-inner">
-            <div class="founder-front" aria-hidden="false">
-              <div class="founder-avatar" id="sid-avatar"></div>
-              <h3 class="founder-name">Sid</h3>
-              <div class="founder-role">Co-Founder & CEO</div>
-            </div>
-            <div class="founder-back" id="sid-desc" aria-hidden="true">
-              <h3>About Sid</h3>
-              <p class="founder-bio">Sid is a visionary leader who drives innovation and growth at CelestialPixel with a passion for technology and design.</p>
-              <div class="founder-skills" aria-label="Skills">
-                <span class="skill">Strategy</span><span class="skill">UI/UX</span><span class="skill">Leadership</span>
-              </div>
-              <div class="founder-quote">"In the vast universe of digital marketing, creativity is my guiding star."</div>
-            </div>
-          </div>
-        </div>
-        <div class="founder-card" tabindex="0" aria-describedby="bhushan-desc" aria-label="Founder Bhushan profile card">
-          <div class="founder-inner">
-            <div class="founder-front" aria-hidden="false">
-              <div class="founder-avatar" id="bhushan-avatar"></div>
-              <h3 class="founder-name">Bhushan</h3>
-              <div class="founder-role">Co-Founder & CTO</div>
-            </div>
-            <div class="founder-back" id="bhushan-desc" aria-hidden="true">
-              <h3>About Bhushan</h3>
-              <p class="founder-bio">Bhushan is the tech genius behind CelestialPixel's futuristic digital solutions and 3D innovations.</p>
-              <div class="founder-skills" aria-label="Skills">
-                <span class="skill">WebGL</span><span class="skill">JavaScript</span><span class="skill">3D Design</span>
-              </div>
-              <div class="founder-quote">"Every pixel tells a story, let's make yours cosmic."</div>
-            </div>
-          </div>
+        
+        <!-- Feature Card - Growth Focused -->
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform hover:-translate-y-2 transition-all duration-300">
+          <div class="text-4xl mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">📈</div>
+          <h3 class="text-xl font-orbitron text-primary mb-4">Growth Focused</h3>
+          <p class="text-white/80">Strategies designed to scale your business</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Contact Section -->
-    <section id="contact" tabindex="-1" aria-labelledby="contact-title" aria-describedby="contact-desc">
-      <h2 id="contact-title">Contact Us</h2>
-      <div class="contact-wrapper">
-        <form class="contact-form" action="https://formspree.io/f/mvgavaeg" method="POST" novalidate aria-label="Contact form">
-          <label for="name">
-            <input type="text" id="name" name="name" required placeholder=" " aria-required="true" aria-describedby="nameHelp" />
-            <span class="label-text">Name</span>
-            <span id="nameHelp" class="sr-only">Enter your full name</span>
-          </label>
-          <label for="email">
-            <input type="email" id="email" name="email" required placeholder=" " aria-required="true" aria-describedby="emailHelp" />
-            <span class="label-text">Email</span>
-            <span id="emailHelp" class="sr-only">Enter your email address</span>
-          </label>
-          <label for="message">
-            <textarea id="message" name="message" placeholder=" " required aria-required="true" aria-describedby="msgHelp"></textarea>
-            <span class="label-text">Message</span>
-            <span id="msgHelp" class="sr-only">Enter your message</span>
-          </label>
-          <button type="submit">Send Message</button>
-        </form>
-        <div class="social-links">
-          <!-- Add your social media links here -->
+  <!-- Services Section - Our core offerings -->
+  <section class="py-32 bg-gradient-to-br from-dark to-[#1a0a2e] relative overflow-hidden scroll-mt-16" id="services">
+    <!-- Background Gradient Effects -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(255,215,0,0.15),transparent_50%),radial-gradient(circle_at_100%_100%,rgba(255,20,147,0.15),transparent_50%),radial-gradient(circle_at_50%_50%,rgba(0,191,255,0.1),transparent_50%)]"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+      <!-- Section Title -->
+      <h2 class="text-4xl md:text-5xl font-orbitron text-center mb-16 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent uppercase tracking-wider">Our Services</h2>
+      
+      <!-- Services Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        <!-- Service Card - Reels Creation -->
+        <div class="bg-black/80 backdrop-blur-lg border-2 border-primary/20 rounded-3xl p-12 shadow-xl hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:shadow-black/40 transition-all duration-300">
+          <div class="text-6xl mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">📱</div>
+          <h3 class="text-3xl font-orbitron text-primary mb-6">Reels Creation</h3>
+          <p class="text-white/90 text-lg leading-relaxed mb-8">Engage your audience with professionally crafted, trend-driven video content that captures attention and drives growth.</p>
+          <div class="text-4xl font-orbitron text-secondary mb-8 flex items-baseline gap-2">
+            ₹7,500 <span class="text-lg text-white/60">/month</span>
+          </div>
+          <div class="space-y-4 border-t border-white/10 pt-8">
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              15 Professional Reels Monthly
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Trending Audio Integration
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Custom Visual Effects
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Performance Analytics
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Strategic Posting Schedule
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Card - Social Posts -->
+        <div class="bg-black/80 backdrop-blur-lg border-2 border-primary/20 rounded-3xl p-12 shadow-xl hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:shadow-black/40 transition-all duration-300">
+          <div class="text-6xl mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">📸</div>
+          <h3 class="text-3xl font-orbitron text-primary mb-6">Social Posts</h3>
+          <p class="text-white/90 text-lg leading-relaxed mb-8">Build a strong social media presence with eye-catching posts that resonate with your target audience and boost engagement.</p>
+          <div class="text-4xl font-orbitron text-secondary mb-8 flex items-baseline gap-2">
+            ₹4,500 <span class="text-lg text-white/60">/month</span>
+          </div>
+          <div class="space-y-4 border-t border-white/10 pt-8">
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              15 Custom Posts Monthly
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Professional Editing
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Engaging Captions
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Hashtag Strategy
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Content Calendar
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Card - Website Development -->
+        <div class="bg-black/80 backdrop-blur-lg border-2 border-primary/20 rounded-3xl p-12 shadow-xl hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:shadow-black/40 transition-all duration-300">
+          <div class="text-6xl mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">🌐</div>
+          <h3 class="text-3xl font-orbitron text-primary mb-6">Website Development</h3>
+          <p class="text-white/90 text-lg leading-relaxed mb-8">Get a stunning, responsive website that converts visitors into customers with modern design and optimal performance.</p>
+          <div class="text-4xl font-orbitron text-secondary mb-8">
+            ₹13,000
+          </div>
+          <div class="space-y-4 border-t border-white/10 pt-8">
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Custom Design & Development
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Mobile Responsive Layout
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              SEO Optimization
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              Fast Loading Speed
+            </div>
+            <div class="flex items-center gap-3 text-white/90">
+              <span class="text-primary">★</span>
+              3 Months Free Support
+            </div>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
+  <!-- Testimonials Section - Client success stories -->
+  <section class="py-24 bg-gradient-to-br from-dark to-[#150515] scroll-mt-16" id="testimonials">
+    <div class="container mx-auto px-6">
+      <!-- Section Title -->
+      <h2 class="text-4xl md:text-5xl font-orbitron text-center mb-16 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent uppercase tracking-wider">Client Success Stories</h2>
+      
+      <!-- Testimonials Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+          <p class="text-lg italic text-white/90 mb-8">"CelestialPixel transformed our social media presence. Our engagement has increased by 300% since working with them!"</p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary via-secondary to-accent mr-4"></div>
+            <div>
+              <h4 class="text-primary font-semibold">Sarah Johnson</h4>
+              <p class="text-white/60 text-sm">Fashion Boutique Owner</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+          <p class="text-lg italic text-white/90 mb-8">"The website they created for us is absolutely stunning. Our conversion rate has doubled since the launch."</p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary via-secondary to-accent mr-4"></div>
+            <div>
+              <h4 class="text-primary font-semibold">Mike Chen</h4>
+              <p class="text-white/60 text-sm">Tech Startup Founder</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+          <p class="text-lg italic text-white/90 mb-8">"Their reel creation service has helped us reach a whole new audience. Best investment we've made!"</p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-primary via-secondary to-accent mr-4"></div>
+            <div>
+              <h4 class="text-primary font-semibold">Priya Patel</h4>
+              <p class="text-white/60 text-sm">Restaurant Owner</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founders Section - Meet the team -->
+  <section class="py-32 bg-gradient-to-br from-dark to-[#1a0a2e] relative overflow-hidden scroll-mt-16" id="founders">
+    <div class="container mx-auto px-6">
+      <!-- Section Title -->
+      <h2 class="text-4xl md:text-5xl font-orbitron text-center mb-16 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent uppercase tracking-wider">Meet Our Founders</h2>
+      
+      <!-- Founders Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-7xl mx-auto">
+        <!-- Sid -->
+        <div class="bg-black/80 backdrop-blur-lg border-2 border-primary/20 rounded-3xl p-12 text-center hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:shadow-black/40 transition-all duration-300">
+          <div class="w-44 h-44 mx-auto mb-8 rounded-full border-3 border-primary shadow-lg shadow-primary/30 overflow-hidden">
+            <img src="./sid.jpg" alt="Sid - Co-Founder & CEO" class="w-full h-full object-cover">
+          </div>
+          <h3 class="text-3xl font-orbitron text-primary mb-2">Sid</h3>
+          <div class="text-accent text-xl font-semibold mb-6">Founder & CEO</div>
+          <p class="text-white/90 text-lg mb-8">Sid is a visionary leader who drives innovation and growth at CelestialPixel with a passion for technology and design.</p>
+          <div class="flex flex-wrap gap-3 justify-center mb-8">
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">Strategy</span>
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">UI/UX</span>
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">Leadership</span>
+          </div>
+          <div class="italic text-secondary text-lg border-l-3 border-secondary pl-6 text-left">
+            "In the vast universe of digital marketing, creativity is my guiding star."
+          </div>
+        </div>
+
+        <!-- Bhushan -->
+        <div class="bg-black/80 backdrop-blur-lg border-2 border-primary/20 rounded-3xl p-12 text-center hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:shadow-black/40 transition-all duration-300">
+          <div class="w-44 h-44 mx-auto mb-8 rounded-full border-3 border-primary shadow-lg shadow-primary/30 overflow-hidden">
+            <img src="./bhus.jpg" alt="Bhushan - Co-Founder & CTO" class="w-full h-full object-cover">
+          </div>
+          <h3 class="text-3xl font-orbitron text-primary mb-2">Bhushan</h3>
+          <div class="text-accent text-xl font-semibold mb-6">Co-Founder & CTO</div>
+          <p class="text-white/90 text-lg mb-8">Bhushan is the tech genius behind CelestialPixel's futuristic digital solutions and 3D innovations.</p>
+          <div class="flex flex-wrap gap-3 justify-center mb-8">
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">WebGL</span>
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">JavaScript</span>
+            <span class="px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full border border-primary/20">3D Design</span>
+          </div>
+          <div class="italic text-secondary text-lg border-l-3 border-secondary pl-6 text-left">
+            "Every pixel tells a story, let's make yours cosmic."
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section - Get in touch form -->
+  <section id="contact" class="relative py-32 bg-gradient-to-br from-dark to-[#1a0a2e] overflow-hidden scroll-mt-16">
+    <!-- Background Gradient Effects -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,215,0,0.05),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(255,20,147,0.05),transparent_50%)]"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+      <!-- Section Title -->
+      <h2 class="text-4xl md:text-5xl font-orbitron text-primary text-center mb-16">Get In Touch</h2>
+      
+      <!-- Contact Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <!-- Contact Info -->
+        <div class="p-8">
+          <h3 class="text-3xl font-orbitron text-primary mb-6">Contact Information</h3>
+          <p class="text-gray-300 text-lg leading-relaxed mb-12">
+            Feel free to reach out to us for any inquiries or to schedule a consultation.
+          </p>
+          
+          <div class="space-y-6">
+            <div class="flex items-center space-x-4">
+              <i class="fas fa-map-marker-alt text-2xl text-primary"></i>
+              <p class="text-gray-300">123 Main St, City, State, ZIP</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <i class="fas fa-phone text-2xl text-primary"></i>
+              <p class="text-gray-300">+1 (555) 123-4567</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <i class="fas fa-envelope text-2xl text-primary"></i>
+              <p class="text-gray-300">info@celestialpixel.com</p>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="flex space-x-6 mt-12">
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-300">
+              <i class="fab fa-facebook-f text-2xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-300">
+              <i class="fab fa-twitter text-2xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-300">
+              <i class="fab fa-instagram text-2xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors duration-300">
+              <i class="fab fa-linkedin-in text-2xl"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-white/5 backdrop-blur-lg p-8 rounded-2xl border border-white/10 shadow-2xl">
+          <h3 class="text-2xl font-orbitron text-primary mb-8">Send Us a Message</h3>
+          <form action="https://formspree.io/f/mvgavaeg" method="POST" class="space-y-6">
+            <!-- Name Input -->
+            <div class="relative">
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                class="peer w-full bg-white/5 border border-white/10 rounded-lg px-4 pt-6 pb-2 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+              />
+              <label 
+                for="name"
+                class="absolute left-4 top-4 text-white/60 text-sm transition-all duration-300 cursor-text
+                       peer-focus:-translate-y-3 peer-focus:scale-90 peer-focus:text-primary
+                       peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-90"
+              >
+                Your Name
+              </label>
+            </div>
+
+            <!-- Email Input -->
+            <div class="relative">
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                class="peer w-full bg-white/5 border border-white/10 rounded-lg px-4 pt-6 pb-2 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+              />
+              <label 
+                for="email"
+                class="absolute left-4 top-4 text-white/60 text-sm transition-all duration-300 cursor-text
+                       peer-focus:-translate-y-3 peer-focus:scale-90 peer-focus:text-primary
+                       peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-90"
+              >
+                Your Email
+              </label>
+            </div>
+
+            <!-- Message Input -->
+            <div class="relative">
+              <textarea 
+                id="message" 
+                name="message" 
+                required 
+                rows="5"
+                class="peer w-full bg-white/5 border border-white/10 rounded-lg px-4 pt-6 pb-2 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 resize-none"
+              ></textarea>
+              <label 
+                for="message"
+                class="absolute left-4 top-4 text-white/60 text-sm transition-all duration-300 cursor-text
+                       peer-focus:-translate-y-3 peer-focus:scale-90 peer-focus:text-primary
+                       peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-90"
+              >
+                Your Message
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit"
+              class="w-full bg-gradient-to-r from-primary to-secondary text-dark font-bold py-4 px-8 rounded-full uppercase tracking-wider hover:shadow-lg hover:shadow-primary/30 transform hover:-translate-y-1 transition-all duration-300 mt-8"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="bg-gradient-to-br from-dark to-[#1a0a2e] pt-20 pb-8 relative overflow-hidden">
+    <!-- Decorative Top Border -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
+    
+    <div class="container mx-auto px-6">
+      <!-- Footer Content Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 max-w-7xl mx-auto">
+        <div>
+          <h3 class="text-2xl font-orbitron text-primary mb-6">About Us</h3>
+          <p class="text-white/90 leading-relaxed">We are passionate about digital excellence. Our mission is to help businesses thrive in the digital world.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-2xl font-orbitron text-primary mb-6">Quick Links</h3>
+          <ul class="space-y-3">
+            <li><a href="#home" class="text-white/90 hover:text-primary transition-colors duration-300">Home</a></li>
+            <li><a href="#why-us" class="text-white/90 hover:text-primary transition-colors duration-300">Why Us</a></li>
+            <li><a href="#services" class="text-white/90 hover:text-primary transition-colors duration-300">Services</a></li>
+            <li><a href="#testimonials" class="text-white/90 hover:text-primary transition-colors duration-300">Testimonials</a></li>
+            <li><a href="#contact" class="text-white/90 hover:text-primary transition-colors duration-300">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-2xl font-orbitron text-primary mb-6">Contact</h3>
+          <p class="text-white/90 mb-3">Email: info@celestialpixel.com</p>
+          <p class="text-white/90 mb-6">Phone: +91 12345 67890</p>
+          <div class="flex gap-6">
+            <a href="#" target="_blank" class="text-white/60 hover:text-primary text-2xl transition-colors duration-300">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" target="_blank" class="text-white/60 hover:text-primary text-2xl transition-colors duration-300">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" target="_blank" class="text-white/60 hover:text-primary text-2xl transition-colors duration-300">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" target="_blank" class="text-white/60 hover:text-primary text-2xl transition-colors duration-300">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Copyright Notice -->
+      <div class="text-center mt-16 pt-8 border-t border-white/10">
+        <p class="text-white/60 text-sm">&copy; 2023 CelestialPixel. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript for Form Handling and Navigation -->
   <script>
     // Form submission handling
-    const form = document.querySelector('.contact-form');
+    const form = document.querySelector('form');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -918,6 +601,66 @@
         alert('Failed to send message. Please try again later.');
         console.error('Error:', error);
       }
+    });
+
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuCloseButton = mobileMenu.querySelector('button');
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+
+      function toggleMobileMenu() {
+        mobileMenu.classList.toggle('translate-x-full');
+        mobileMenu.classList.toggle('translate-x-0');
+        document.body.classList.toggle('overflow-hidden');
+      }
+
+      // Open menu when clicking the hamburger button
+      mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+      // Close menu when clicking the close button
+      mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
+
+      // Close menu when clicking a link
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          toggleMobileMenu();
+          
+          // Smooth scroll to section
+          const targetId = link.getAttribute('href').substring(1);
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (mobileMenu.classList.contains('translate-x-0') && 
+            !mobileMenu.contains(e.target) && 
+            !mobileMenuButton.contains(e.target)) {
+          toggleMobileMenu();
+        }
+      });
+
+      // Prevent clicks inside menu from closing it
+      mobileMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+
+    // Add scroll padding when clicking navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
     });
   </script>
 </body>
