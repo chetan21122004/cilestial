@@ -24,12 +24,137 @@
           backgroundImage: {
             'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
           },
+          animation: {
+            'spin-slow': 'spin 3s linear infinite',
+            'ping-slow': 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite',
+            'gradient': 'gradient 8s linear infinite',
+            'slide-up': 'slideUp 0.5s ease-out',
+            'progress': 'progress 1.5s ease-in-out',
+            'fade-in': 'fadeIn 0.5s ease-out',
+          },
+          keyframes: {
+            gradient: {
+              '0%, 100%': {
+                'background-size': '200% 200%',
+                'background-position': 'left center'
+              },
+              '50%': {
+                'background-size': '200% 200%',
+                'background-position': 'right center'
+              },
+            },
+            slideUp: {
+              '0%': {
+                transform: 'translateY(20px)',
+                opacity: '0'
+              },
+              '100%': {
+                transform: 'translateY(0)',
+                opacity: '1'
+              },
+            },
+            progress: {
+              '0%': { width: '0%' },
+              '100%': { width: '100%' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+          },
         }
       }
     }
   </script>
+  <style>
+    /* Hide scrollbar during preload */
+    .preload {
+      overflow: hidden;
+    }
+    
+    /* Preloader animation */
+    .animate-preloader {
+      animation: preloader 2s ease infinite;
+    }
+    
+    @keyframes preloader {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #FFD700, #FF1493, #00BFFF);
+      background-size: 200% 100%;
+      animation: gradientMove 2s linear infinite;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 100% 0%; }
+      100% { background-position: -100% 0%; }
+    }
+
+    .celestial-text {
+      background: linear-gradient(90deg, #FFD700, #FF1493, #00BFFF, #FFD700);
+      background-size: 300% 100%;
+      animation: gradientText 4s linear infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    @keyframes gradientText {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+  </style>
 </head>
-<body class="font-poppins bg-dark text-white overflow-x-hidden">
+<body class="font-poppins bg-dark text-white overflow-x-hidden preload">
+  <!-- Enhanced Preloader -->
+  <div id="preloader" class="fixed inset-0 z-[200] bg-dark flex flex-col items-center justify-center transition-all duration-500">
+    <!-- Main Animation Container -->
+    <div class="relative mb-12 animate-fade-in">
+      <!-- Outer rotating circles -->
+      <div class="absolute inset-0 animate-spin-slow">
+        <div class="w-32 h-32 rounded-full border-t-4 border-b-4 border-primary opacity-20"></div>
+      </div>
+      <div class="absolute inset-0 animate-spin-slow" style="animation-direction: reverse;">
+        <div class="w-32 h-32 rounded-full border-l-4 border-r-4 border-secondary opacity-20"></div>
+      </div>
+      
+      <!-- Middle pulsing circle -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-24 h-24 bg-gradient-to-r from-primary via-secondary to-accent rounded-full animate-ping-slow opacity-30"></div>
+      </div>
+      
+      <!-- Center logo -->
+      <div class="relative w-32 h-32 flex items-center justify-center">
+        <div class="w-16 h-16 bg-gradient-to-r from-primary via-secondary to-accent rounded-full animate-preloader flex items-center justify-center backdrop-blur-lg">
+          <span class="text-dark text-2xl font-orbitron font-bold">CP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Text -->
+    <div class="text-center mb-8 animate-slide-up" style="animation-delay: 0.2s">
+      <h2 class="celestial-text text-3xl font-orbitron font-bold mb-2">
+        CelestialPixel
+      </h2>
+      <p class="text-white/60 text-sm">Creating Digital Magic</p>
+    </div>
+
+    <!-- Progress Bar Container -->
+    <div class="w-64 h-1 bg-white/10 rounded-full overflow-hidden animate-fade-in" style="animation-delay: 0.3s">
+      <div class="progress-bar h-full rounded-full animate-progress"></div>
+    </div>
+
+    <!-- Loading Status -->
+    <div class="mt-4 text-white/60 text-sm animate-fade-in" style="animation-delay: 0.4s">
+      <span id="loadingText">Loading Assets</span>
+      <span class="dots">...</span>
+    </div>
+  </div>
+
   <!-- Mobile Menu Button -->
   <button id="mobile-menu-button" class="fixed top-5 right-5 z-[100] p-2.5 rounded-xl bg-gradient-to-r from-primary/90 to-secondary/90 backdrop-blur-lg md:hidden group hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_20px_rgba(255,215,0,0.3)]">
     <div class="relative w-7 h-7 flex flex-col items-center justify-center gap-1.5">
@@ -577,6 +702,43 @@
 
   <!-- JavaScript for Form Handling and Navigation -->
   <script>
+    // Enhanced Preloader JavaScript
+    window.addEventListener('load', function() {
+      const preloader = document.getElementById('preloader');
+      const body = document.body;
+      const loadingText = document.getElementById('loadingText');
+      const loadingStates = [
+        'Initializing',
+        'Loading Assets',
+        'Preparing Canvas',
+        'Almost Ready'
+      ];
+      let currentState = 0;
+
+      // Update loading text
+      const updateLoadingText = () => {
+        if (currentState < loadingStates.length) {
+          loadingText.textContent = loadingStates[currentState];
+          currentState++;
+        }
+      };
+
+      // Start updating loading text
+      const textInterval = setInterval(updateLoadingText, 500);
+
+      // Hide preloader
+      setTimeout(() => {
+        clearInterval(textInterval);
+        preloader.style.opacity = '0';
+        preloader.style.transform = 'scale(1.1)';
+        body.classList.remove('preload');
+        
+        setTimeout(() => {
+          preloader.style.display = 'none';
+        }, 500);
+      }, 2000);
+    });
+
     // Form submission handling
     const form = document.querySelector('form');
     form.addEventListener('submit', async (e) => {
@@ -664,4 +826,5 @@
     });
   </script>
 </body>
+</html>
 </html>
